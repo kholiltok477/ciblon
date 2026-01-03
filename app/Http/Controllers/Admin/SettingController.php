@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Setting;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class SettingController extends Controller
+{
+    public function index()
+    {
+        $settings = Setting::all()->groupBy('group');
+        return view('admin.settings.index', compact('settings'));
+    }
+
+    public function update(Request $request)
+    {
+        $data = $request->except('_token');
+
+        foreach ($data as $key => $value) {
+            $setting = Setting::where('key', $key)->first();
+            if (!$setting)
+                continue;
+
+            if ($setting->type === 'image' && $request->hasFile($key)) {
+                if ($setting->value && !filter_var($setting->value, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($setting->value);
+                }
+                $path = $request->file($key)->store('settings', 'public');
+                $setting->update(['value' => $path]);
+            } else {
+                $setting->update(['value' => $value]);
+            }
+        }
+
+        return back()->with('success', 'Settings updated successfully.');
+    }
+}

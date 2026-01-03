@@ -1,0 +1,8 @@
+.hero {
+  background: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('/images/swim.jpg') center/cover no-repeat;
+  height: 60vh;
+  display:flex; align-items:center; justify-content:center; color:#fff;
+}
+.btn-google {
+  background:#fff; color:#444; border:1px solid #ddd;
+}
